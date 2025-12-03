@@ -2,6 +2,10 @@
 import csv
 import os
 from datetime import datetime
+import io
+from contextlib import redirect_stdout
+import tkinter as tk
+from tkinter import scrolledtext, messagebox
 
 from src.data_structs import Team, Match
 from src.bst import build_bst_by_name, build_bst_by_goals, top_k_by_inorder_goals
@@ -164,5 +168,60 @@ def main():
 
     print("\nFinalizado. Verifique output/matches_summary.csv e os prints acima para incluir no relatório.")
 
+def run_main_captured():
+    """
+    Executa main() capturando toda a saída em uma string (para usar na interface Tkinter).
+    """
+    buffer = io.StringIO()
+    try:
+        with redirect_stdout(buffer):
+            main()
+    except Exception as e:
+        # também registra o erro no buffer para aparecer na interface
+        print("Erro durante a execução:", e)
+    return buffer.getvalue()
+
+def run_gui():
+    """
+    Interface simples em Tkinter para visualizar a saída do programa.
+    """
+    root = tk.Tk()
+    root.title("Análise de Dados de Futebol")
+    root.geometry("900x600")
+
+    frame_top = tk.Frame(root)
+    frame_top.pack(fill=tk.X, padx=10, pady=10)
+
+    label = tk.Label(
+        frame_top,
+        text="Clique em \"Executar análise\" para processar o dataset e ver o resumo abaixo.",
+        anchor="w"
+    )
+    label.pack(side=tk.LEFT)
+
+    def on_run():
+        try:
+            output = run_main_captured()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Ocorreu um erro ao executar a análise:\n{e}")
+            return
+        text_box.config(state="normal")
+        text_box.delete("1.0", tk.END)
+        text_box.insert(tk.END, output)
+        text_box.config(state="disabled")
+
+    btn_run = tk.Button(frame_top, text="Executar análise", command=on_run)
+    btn_run.pack(side=tk.RIGHT, padx=5)
+
+    frame_text = tk.Frame(root)
+    frame_text.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
+
+    text_box = scrolledtext.ScrolledText(frame_text, wrap=tk.WORD)
+    text_box.pack(fill=tk.BOTH, expand=True)
+    text_box.config(state="disabled")
+
+    root.mainloop()
+
 if __name__ == "__main__":
-    main()
+    # Abre a interface Tkinter para melhor visualização da saída.
+    run_gui()
