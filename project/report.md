@@ -195,7 +195,7 @@ O arquivo `main.py` executa todas as etapas de forma sequencial, permitindo repr
 * **Aluno 3:** Implementação do Merge Sort e cálculo de pontos.
 * **Aluno 4:** Implementação da AVL.
 * **Aluno 5:** Busca linear/binária, integração e geração do relatório.
-
+* **Aluno 6:** Implementação da AVL.
 ---
 
 Fim do relatório.
